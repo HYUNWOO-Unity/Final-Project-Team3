@@ -1,119 +1,82 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    public int id;
-    public int prefabId;
-    public float damage;
-    public int count;
-    public float speed;
+    public SkillType currentSkillType; // 현재 장착된 스킬 타입
+    public Attribute currentAttribute; // 현재 캐릭터 속성
+    public float damage = 10f;
+    public int count = 1;
+    public float speed = 0.5f;
+    public float range = 5f;
 
-    private float timer;
-    //Player player;
+//    private float timer;
+//    private Player player;
 
-    //private void Awake()
-    //{
-    //    player = GameManager.Instance.player;
-    //}
-    //void Update()
-    //{
-    //    switch (id)
-    //    {
-    //        case 0:
-    //            transform.Rotate(Vector3.back * speed * Time.deltaTime);
-    //            break;
-    //        default:
-    //            timer += Time.deltaTime;
+//    private void Awake()
+//    {
+//        player = GameManager.Instance.player;
+//    }
 
-    //            if (timer > speed)
-    //            {
-    //                timer = 0f;
-    //                Fire();
-    //            }
-    //            break;
-    //    }
+//    private void Update()
+//    {
+//        timer += Time.deltaTime;
 
-    //}
+//        if (timer > speed)
+//        {
+//            timer = 0f;
+//            Fire();
+//        }
+//    }
 
-    //public void LevelUp(float damage, int count)
-    //{
-    //    this.damage = damage;
-    //    this.count += count;
+//    public void Init(SkillType skillType, Attribute attribute)
+//    {
+//        currentSkillType = skillType;
+//        currentAttribute = attribute;
+//    }
 
-    //    if (id == 0)
-    //        Batch();
+//    public void UpgradeSkill(float additionalDamage, float cooldownReduction, float rangeIncrease, int projectileIncrease)
+//    {
+//        damage += additionalDamage;
+//        speed -= cooldownReduction;
+//        range += rangeIncrease;
+//        count += projectileIncrease;
 
-    //    player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
-    //}
-    //public void Init(ItemData data)
-    //{
-    //    name = "Weapon" + data.itemId;
-    //    transform.parent = player.transform;
-    //    transform.localPosition = Vector3.zero;
+//        if (speed < 0.1f) speed = 0.1f; // 최소 쿨타임 제한
+//    }
 
-    //    id = data.itemId;
-    //    damage = data.baseDamage;
-    //    count = data.baseCount;
+//    private void Fire()
+//    {
+//        if (!player.scanner.nearestTarget) return;
 
-    //    for (int index = 0; index < GameManager.Instance.pool.prefabs.Length; index++)
-    //    {
-    //        if (data.projectile == GameManager.Instance.pool.prefabs[index])
-    //        {
-    //            prefabId = index;
-    //            break;
-    //        }
-    //    }
-    //    switch (id)
-    //    {
-    //        case 0:
-    //            speed = 150;
-    //            Batch();
-    //            break;
-    //        default:
-    //            speed = 0.4f;
-    //            break;
-    //    }
-    //    player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
-    //}
+//        Vector3 targetPos = player.scanner.nearestTarget.position;
+//        Vector3 direction = (targetPos - transform.position).normalized;
 
-    //void Batch()
-    //{
-    //    for (int index = 0; index < count; index++)
-    //    {
-    //        Transform bullet;
-    //        if (index < transform.childCount)
-    //        {
-    //            bullet = transform.GetChild(index);
-    //        }
-    //        else
-    //        {
-    //            bullet = GameManager.Instance.pool.Get(prefabId).transform; //
-    //            bullet.parent = transform;
-    //        }
+//        for (int i = 0; i < count; i++)
+//        {
+//            Transform bullet = GameManager.Instance.pool.Get((int)currentSkillType).transform;
+//            bullet.position = transform.position;
 
-    //        bullet.localPosition = Vector3.zero;
-    //        bullet.localRotation = Quaternion.identity;
+//            switch (currentSkillType)
+//            {
+//                case SkillType.Single:
+//                    bullet.GetComponent<Skill>().Init(currentSkillType, currentAttribute, damage, 1, direction);
+//                    break;
 
-    //        Vector3 rotVec = Vector3.forward * 360 * index / count;
-    //        bullet.Rotate(rotVec);
-    //        bullet.Translate(bullet.up * 1.5f, Space.World);
-    //        bullet.GetComponent<Bullet>().Init(damage, -1, Vector3.zero); //-1 is Infinity per.
-    //    }
-    //}
+//                case SkillType.Cone:
+//                    float angle = i * (range / count) - (range / 2);
+//                    Vector3 rotatedDirection = Quaternion.Euler(0, 0, angle) * direction;
+//                    bullet.GetComponent<Skill>().Init(currentSkillType, currentAttribute, damage, 1, rotatedDirection);
+//                    break;
 
-    //private void Fire()
-    //{
-    //    if (!player.scanner.nearestTarget) return;
+//                case SkillType.Linear:
+//                    bullet.GetComponent<Skill>().Init(currentSkillType, currentAttribute, damage, 1, direction);
+//                    break;
 
-    //    Vector3 targetPos = player.scanner.nearestTarget.position;
-    //    Vector3 dir = targetPos - transform.position;
-    //    dir = dir.normalized;
-
-    //    Transform bullet = GameManager.Instance.pool.Get(prefabId).transform;
-    //    bullet.position = transform.position;
-    //    bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir); ;
-    //    bullet.GetComponent<Bullet>().Init(damage, count, dir);
-    //}
+//                case SkillType.Area:
+//                    bullet.GetComponent<Skill>().Init(currentSkillType, currentAttribute, damage, 0, Vector3.zero, range);
+//                    break;
+//            }
+//        }
+//    }
 }

@@ -1,35 +1,33 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Scanner : MonoBehaviour
 {
-    public float scanRange;
-    public LayerMask targetLayer;
-    public RaycastHit2D[] targets;
-    public Transform nearestTarget;
+    public float scanRange; // Å½»ö ¹üÀ§
+    public LayerMask targetLayer; // Å½»ö ´ë»ó ·¹ÀÌ¾î
+    public Transform nearestTarget; // °¡Àå °¡±î¿î Å¸°Ù
+
+    private RaycastHit2D[] targets;
 
     private void FixedUpdate()
     {
+        // Å½»ö
         targets = Physics2D.CircleCastAll(transform.position, scanRange, Vector2.zero, 0, targetLayer);
-        nearestTarget = GetNearest();
+        nearestTarget = GetNearestTarget();
     }
 
-    Transform GetNearest()
+    private Transform GetNearestTarget()
     {
         Transform result = null;
-        float diff = 100;
+        float minDistance = Mathf.Infinity;
 
-        foreach (RaycastHit2D target in targets)
+        foreach (RaycastHit2D hit in targets)
         {
-            Vector3 myPos = transform.position;
-            Vector3 targetPos = target.transform.position;
-            float curDiff = Vector3.Distance(myPos, targetPos);
+            float distance = Vector2.Distance(transform.position, hit.transform.position);
 
-            if (curDiff < diff)
+            if (distance < minDistance)
             {
-                diff = curDiff;
-                result = target.transform;
+                minDistance = distance;
+                result = hit.transform;
             }
         }
 
